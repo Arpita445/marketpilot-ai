@@ -11,17 +11,7 @@ import {
   ContentOpportunity,
   ActionTask,
 } from "../types";
-import {
-  DEMO_PROJECT,
-  DEMO_POSITIONING,
-  DEMO_PERSONAS,
-  DEMO_SEO_AUDIT,
-  DEMO_KEYWORDS,
-  DEMO_COMPETITORS,
-  DEMO_CONTENT_OPPORTUNITIES,
-  DEMO_ACTION_PLAN,
-  generateMockStrategyForProject,
-} from "../ai/mock-engine";
+import { generateMockStrategyForProject } from "../ai/mock-engine";
 import { INITIAL_PROJECTS } from "../db/storage";
 
 interface StrategyData {
@@ -36,8 +26,9 @@ interface StrategyData {
 
 interface ProjectContextType {
   projects: Project[];
-  currentProject: Project;
-  strategyData: StrategyData;
+  currentProject: Project | null;
+  strategyData: StrategyData | null;
+  hasProjects: boolean;
   selectProject: (project: Project) => void;
   addProject: (newProject: Partial<Project>) => Promise<Project>;
 }
@@ -46,33 +37,19 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
-  const [currentProject, setCurrentProject] = useState<Project>(INITIAL_PROJECTS[0]);
-  const [strategyData, setStrategyData] = useState<StrategyData>({
-    positioning: DEMO_POSITIONING,
-    personas: DEMO_PERSONAS,
-    seoAudit: DEMO_SEO_AUDIT,
-    keywords: DEMO_KEYWORDS,
-    competitors: DEMO_COMPETITORS,
-    contentOpportunities: DEMO_CONTENT_OPPORTUNITIES,
-    actionPlan: DEMO_ACTION_PLAN,
-  });
+  const [currentProject, setCurrentProject] = useState<Project | null>(
+    INITIAL_PROJECTS.length > 0 ? INITIAL_PROJECTS[0] : null
+  );
+  const [strategyData, setStrategyData] = useState<StrategyData | null>(null);
 
-  // Whenever currentProject changes, update strategyData
+  // Whenever currentProject changes, generate strategy from user's real data
   useEffect(() => {
-    if (currentProject.id === "demo-urbannest" || currentProject.name.toLowerCase().includes("urbannest")) {
-      setStrategyData({
-        positioning: DEMO_POSITIONING,
-        personas: DEMO_PERSONAS,
-        seoAudit: DEMO_SEO_AUDIT,
-        keywords: DEMO_KEYWORDS,
-        competitors: DEMO_COMPETITORS,
-        contentOpportunities: DEMO_CONTENT_OPPORTUNITIES,
-        actionPlan: DEMO_ACTION_PLAN,
-      });
-    } else {
-      const generated = generateMockStrategyForProject(currentProject);
-      setStrategyData(generated);
+    if (!currentProject) {
+      setStrategyData(null);
+      return;
     }
+    const generated = generateMockStrategyForProject(currentProject);
+    setStrategyData(generated);
   }, [currentProject]);
 
   const selectProject = (project: Project) => {
@@ -83,17 +60,17 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const newProj: Project = {
       id: `proj-${Date.now()}`,
       name: projInput.name || "New Project",
-      productName: projInput.productName || "Product Service",
-      industry: projInput.industry || "General Industry",
-      websiteUrl: projInput.websiteUrl || "https://example.com",
+      productName: projInput.productName || "My Product",
+      industry: projInput.industry || "General",
+      websiteUrl: projInput.websiteUrl || "",
       location: projInput.location || "Global",
-      description: projInput.description || "Created in MarketPilot AI",
+      description: projInput.description || "",
       customerType: projInput.customerType || "B2C",
       targetAge: projInput.targetAge || "25-45",
       customerInterests: projInput.customerInterests || "",
       customerPainPoints: projInput.customerPainPoints || "",
       primaryGoal: projInput.primaryGoal || "Lead Generation",
-      budgetRange: projInput.budgetRange || "$5,000 - $15,000",
+      budgetRange: projInput.budgetRange || "Not specified",
       timeline: projInput.timeline || "3 Months",
       healthScore: Math.floor(Math.random() * 15) + 75,
       gtmScore: Math.floor(Math.random() * 15) + 80,
@@ -114,6 +91,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         projects,
         currentProject,
         strategyData,
+        hasProjects: projects.length > 0,
         selectProject,
         addProject,
       }}

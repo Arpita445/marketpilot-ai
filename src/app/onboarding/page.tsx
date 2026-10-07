@@ -2,32 +2,34 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight, ArrowLeft, Check, Building2, Target, Rocket, Globe, Users, DollarSign, Clock, HelpCircle } from "lucide-react";
+import { Sparkles, ArrowRight, ArrowLeft, Check, Rocket, Globe } from "lucide-react";
 import ProgressiveAnalysisLoader from "@/components/analysis/ProgressiveAnalysisLoader";
+import { useProject } from "@/lib/context/ProjectContext";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { addProject } = useProject();
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Form State
+  // Form State — all empty by default, user fills in their own data
   const [userRole, setUserRole] = useState("Startup");
   const [primaryGoal, setPrimaryGoal] = useState("Generate leads");
 
-  // Project Info
-  const [projectName, setProjectName] = useState("UrbanNest Interiors");
-  const [productName, setProductName] = useState("Home Interior Design Services");
-  const [industry, setIndustry] = useState("Home & Interior Design");
-  const [websiteUrl, setWebsiteUrl] = useState("https://urbannest-design.demo");
-  const [location, setLocation] = useState("Nagpur, MH");
+  // Project Info — no demo defaults
+  const [projectName, setProjectName] = useState("");
+  const [productName, setProductName] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [location, setLocation] = useState("");
   const [customerType, setCustomerType] = useState<"B2B" | "B2C" | "Both">("B2C");
-  const [targetAge, setTargetAge] = useState("28-40");
-  const [customerInterests, setCustomerInterests] = useState("Home Decor, Architecture, Modular Kitchens");
-  const [customerPainPoints, setCustomerPainPoints] = useState("Pricing ambiguity, delayed contractor handovers");
-  const [description, setDescription] = useState("Modern modular kitchen, luxury living rooms, and complete residential interior architectural execution.");
-  const [budgetRange, setBudgetRange] = useState("$5,000 - $15,000");
-  const [timeline, setTimeline] = useState("3 Months");
-  const [competitors, setCompetitors] = useState("https://livspace-nagpur.demo, https://homelane-demo.com");
+  const [targetAge, setTargetAge] = useState("");
+  const [customerInterests, setCustomerInterests] = useState("");
+  const [customerPainPoints, setCustomerPainPoints] = useState("");
+  const [description, setDescription] = useState("");
+  const [budgetRange, setBudgetRange] = useState("");
+  const [timeline, setTimeline] = useState("");
+  const [competitors, setCompetitors] = useState("");
 
   const roles = [
     "Startup",
@@ -49,8 +51,24 @@ export default function OnboardingPage() {
     "Understand competitors",
   ];
 
-  const handleStartAnalysis = (e: React.FormEvent) => {
+  const handleStartAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Add the new project to context (generates AI strategy based on user's input)
+    await addProject({
+      name: projectName,
+      productName,
+      industry,
+      websiteUrl,
+      location,
+      description,
+      customerType,
+      targetAge,
+      customerInterests,
+      customerPainPoints,
+      primaryGoal,
+      budgetRange,
+      timeline,
+    });
     setIsAnalyzing(true);
   };
 
@@ -74,7 +92,7 @@ export default function OnboardingPage() {
       <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-full max-w-7xl bg-hero-glow" />
 
       <div className="w-full max-w-2xl">
-        
+
         {/* Progress Indicator */}
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -171,59 +189,63 @@ export default function OnboardingPage() {
           <div className="glass-card p-8 rounded-2xl border border-slate-800 shadow-2xl">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-white mb-1">Create Your First Project</h2>
-              <p className="text-xs text-slate-400">Enter your product information. You can use our default demo data or enter your own.</p>
+              <p className="text-xs text-slate-400">Tell us about your product — our AI will generate a full GTM + SEO strategy.</p>
             </div>
 
             <form onSubmit={handleStartAnalysis} className="space-y-4">
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Project Name</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Project Name *</label>
                   <input
                     type="text"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     required
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. Apex Fitness"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Product / Service Name</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Product / Service Name *</label>
                   <input
                     type="text"
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
                     required
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. Online Fitness Coaching"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Industry</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Industry *</label>
                   <input
                     type="text"
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
                     required
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. Health & Fitness"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Target Location</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Target Location *</label>
                   <input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     required
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. Mumbai, India"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Website URL (Optional for SEO Audit)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Website URL (Optional — for SEO Audit)</label>
                 <div className="relative">
                   <Globe className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
                   <input
@@ -231,7 +253,7 @@ export default function OnboardingPage() {
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     placeholder="https://yourwebsite.com"
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 pl-9 pr-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 pl-9 pr-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -250,12 +272,13 @@ export default function OnboardingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Target Age</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Target Age Range</label>
                   <input
                     type="text"
                     value={targetAge}
                     onChange={(e) => setTargetAge(e.target.value)}
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. 25-45"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -264,28 +287,54 @@ export default function OnboardingPage() {
                     type="text"
                     value={budgetRange}
                     onChange={(e) => setBudgetRange(e.target.value)}
-                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="e.g. $1,000 - $5,000"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Short Product Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none resize-none"
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Target Customer Interests</label>
+                <input
+                  type="text"
+                  value={customerInterests}
+                  onChange={(e) => setCustomerInterests(e.target.value)}
+                  placeholder="e.g. Fitness, Weight Loss, Nutrition, Wellness"
+                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Optional Competitor URLs (Comma separated)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Customer Pain Points</label>
+                <input
+                  type="text"
+                  value={customerPainPoints}
+                  onChange={(e) => setCustomerPainPoints(e.target.value)}
+                  placeholder="e.g. Lack of motivation, no personalized plan, expensive gym memberships"
+                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Short Product Description *</label>
+                <textarea
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  placeholder="Briefly describe what your product/service does and who it's for..."
+                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Competitor URLs (Optional, comma separated)</label>
                 <input
                   type="text"
                   value={competitors}
                   onChange={(e) => setCompetitors(e.target.value)}
-                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white focus:border-brand-500 focus:outline-none text-xs font-mono"
+                  placeholder="https://competitor1.com, https://competitor2.com"
+                  className="w-full rounded-xl bg-slate-900 border border-slate-800 py-2 px-3 text-sm text-white placeholder:text-slate-600 focus:border-brand-500 focus:outline-none text-xs font-mono"
                 />
               </div>
 

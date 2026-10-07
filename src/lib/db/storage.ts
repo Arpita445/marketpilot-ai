@@ -1,58 +1,12 @@
-import { Project, User } from "../types";
-import { DEMO_PROJECT } from "../ai/mock-engine";
+import { Project } from "../types";
 
-export const DEFAULT_USER: User = {
-  id: "user-demo-1",
-  name: "Arpita Gupta",
-  email: "arpita@marketpilot.ai",
-  role: "Founder / Growth Lead",
+export const DEFAULT_USER = {
+  id: "user-1",
+  name: "User",
+  email: "",
+  role: "Growth Lead",
   plan: "PRO",
 };
 
-export const INITIAL_PROJECTS: Project[] = [
-  DEMO_PROJECT,
-  {
-    id: "proj-saas-1",
-    name: "TaskFlow AI",
-    productName: "AI-Powered B2B Workflow Automation",
-    industry: "SaaS & Productivity",
-    websiteUrl: "https://taskflow.ai.demo",
-    location: "San Francisco, CA / Remote",
-    description: "Automated project management and ticket routing for fast-growing engineering agencies.",
-    customerType: "B2B",
-    targetAge: "30-50",
-    customerInterests: "DevOps, Project Management, AI Tools, Agency Ops",
-    customerPainPoints: "Engineers spending 40% of time filling status updates; missed deadlines",
-    primaryGoal: "Lead Generation",
-    budgetRange: "$5,000 - $15,000",
-    timeline: "6 Months",
-    healthScore: 88,
-    gtmScore: 90,
-    seoScore: 82,
-    contentScore: 85,
-    presenceScore: 78,
-    createdAt: "2026-09-15T10:00:00Z",
-  },
-  {
-    id: "proj-ecom-1",
-    name: "Artisan Kitchenware",
-    productName: "Eco-Friendly Cast Iron & Ceramic Cookware",
-    industry: "E-commerce & Home Goods",
-    websiteUrl: "https://artisankitchen.demo",
-    location: "Austin, TX / Online",
-    description: "Handcrafted non-toxic heirloom cookware direct to home chefs.",
-    customerType: "B2C",
-    targetAge: "25-45",
-    customerInterests: "Organic Cooking, Culinary Arts, Sustainable Living, Home Chef",
-    customerPainPoints: "Toxin concerns with Teflon non-stick pans; expensive luxury brands",
-    primaryGoal: "Increase Sales",
-    budgetRange: "$2,000 - $5,000",
-    timeline: "1 Month Sprint",
-    healthScore: 76,
-    gtmScore: 79,
-    seoScore: 71,
-    contentScore: 82,
-    presenceScore: 74,
-    createdAt: "2026-09-20T10:00:00Z",
-  },
-];
+// No pre-loaded demo projects — users create their own
+export const INITIAL_PROJECTS: Project[] = [];

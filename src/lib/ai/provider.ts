@@ -10,16 +10,7 @@ import {
   CampaignItem,
   ActionTask,
 } from "../types";
-import {
-  DEMO_POSITIONING,
-  DEMO_PERSONAS,
-  DEMO_SEO_AUDIT,
-  DEMO_KEYWORDS,
-  DEMO_COMPETITORS,
-  DEMO_CONTENT_OPPORTUNITIES,
-  DEMO_ACTION_PLAN,
-  generateMockStrategyForProject,
-} from "./mock-engine";
+import { generateMockStrategyForProject } from "./mock-engine";
 
 export class AIServiceProvider {
   private client: OpenAI | null = null;
@@ -54,18 +45,7 @@ export class AIServiceProvider {
     actionPlan: ActionTask[];
   }> {
     if (this.isDemoMode || !this.client) {
-      // Return UrbanNest static demo data if project is UrbanNest, otherwise generated mock data
-      if (project.id === "demo-urbannest" || project.name.toLowerCase().includes("urbannest")) {
-        return {
-          positioning: DEMO_POSITIONING,
-          personas: DEMO_PERSONAS,
-          seoAudit: DEMO_SEO_AUDIT,
-          keywords: DEMO_KEYWORDS,
-          competitors: DEMO_COMPETITORS,
-          contentOpportunities: DEMO_CONTENT_OPPORTUNITIES,
-          actionPlan: DEMO_ACTION_PLAN,
-        };
-      }
+      // Always generate strategy based on the user's actual project data
       return generateMockStrategyForProject(project);
     }
 

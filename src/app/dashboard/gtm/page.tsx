@@ -4,7 +4,16 @@ import { useProject } from "@/lib/context/ProjectContext";
 import { Target, CheckCircle2, ShieldCheck, Zap, Sparkles, TrendingUp, Layers, Compass } from "lucide-react";
 
 export default function GTMStrategyPage() {
-  const { strategyData } = useProject();
+  const { strategyData, currentProject } = useProject();
+
+  if (!currentProject || !strategyData) {
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400">
+        <p>No project selected. <a href="/onboarding" className="text-brand-400 underline">Create a project</a> to get started.</p>
+      </div>
+    );
+  }
+
   const positioning = strategyData.positioning;
 
   return (
