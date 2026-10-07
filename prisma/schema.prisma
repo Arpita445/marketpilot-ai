@@ -1,0 +1,207 @@
+// Prisma Schema for MarketPilot AI
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  name          String?
+  passwordHash  String?
+  role          String      @default("USER")
+  plan          String      @default("FREE")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  projects      Project[]
+  subscriptions Subscription[]
+}
+
+model Project {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  productName     String
+  industry        String
+  websiteUrl      String?
+  location        String
+  description     String
+  customerType    String            @default("Both")
+  targetAge       String            @default("25-45")
+  customerInterests String          @default("")
+  customerPainPoints String         @default("")
+  primaryGoal     String
+  budgetRange     String            @default("$1,000 - $5,000")
+  timeline        String            @default("3 months")
+  healthScore     Int               @default(78)
+  gtmScore        Int               @default(82)
+  seoScore        Int               @default(74)
+  contentScore    Int               @default(88)
+  presenceScore   Int               @default(69)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  productDetails  Product?
+  personas        Persona[]
+  keywords        Keyword[]
+  competitors     Competitor[]
+  seoAudits       SEOAudit[]
+  contents        ContentItem[]
+  campaigns       Campaign[]
+  metrics         AnalyticsMetric[]
+  reports         Report[]
+}
+
+model Product {
+  id                  String   @id @default(uuid())
+  projectId           String   @unique
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  oneLineValProp      String
+  shortPitch          String
+  detailedPositioning String
+  keyDifferentiators  String
+  channelReadiness    String // JSON string of channels & scores
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Persona {
+  id               String   @id @default(uuid())
+  projectId        String
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title            String
+  ageRange         String
+  location         String
+  problem          String
+  goals            String
+  painPoints       String
+  buyingTriggers   String
+  preferredChannels String
+  recommendedMessage String
+  createdAt        DateTime @default(now())
+}
+
+model Keyword {
+  id              String   @id @default(uuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keyword         String
+  searchIntent    String
+  competition     String
+  relevanceScore  Int
+  priority        String
+  recommendedPage String
+  createdAt       DateTime @default(now())
+}
+
+model Competitor {
+  id              String   @id @default(uuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name            String
+  url             String
+  seoScore        Int
+  contentScore    Int
+  keywordScore    Int
+  presenceScore   Int
+  positioning     String
+  winStrategy     String
+  createdAt       DateTime @default(now())
+}
+
+model SEOAudit {
+  id                 String   @id @default(uuid())
+  projectId          String
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url                String
+  score              Int
+  currentTitle       String
+  recommendedTitle   String
+  currentMetaDesc    String
+  recommendedMetaDesc String
+  h1Analysis         String
+  keywordDensity     String
+  recommendations    String // JSON array of recommendations
+  createdAt          DateTime @default(now())
+}
+
+model ContentItem {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type        String
+  topic       String
+  targetAudience String
+  tone        String
+  content     String
+  status      String   @default("DRAFT")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Campaign {
+  id          String         @id @default(uuid())
+  projectId   String
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  goal        String
+  audience    String
+  budget      String
+  startDate   String
+  endDate     String
+  channels    String
+  objective   String
+  messaging   String
+  tasks       CampaignTask[]
+  createdAt   DateTime       @default(now())
+}
+
+model CampaignTask {
+  id          String   @id @default(uuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  weekNumber  Int
+  taskName    String
+  description String
+  priority    String
+  status      String   @default("PENDING")
+  dueDate     String
+}
+
+model AnalyticsMetric {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metricName  String
+  value       Float
+  change      Float
+  category    String
+  date        DateTime @default(now())
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  contentJson String
+  createdAt   DateTime @default(now())
+}
+
+model Subscription {
+  id                   String   @id @default(uuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String   @default("ACTIVE")
+  plan                 String   @default("FREE")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
